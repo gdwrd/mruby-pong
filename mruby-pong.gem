@@ -1,0 +1,6 @@
+name: mruby-pong
+description: mruby-pong its http router for mruby
+author: Nazarii Sheremet
+website: https://github.com/nsheremet/mruby-pong
+protocol: git
+repository: https://github.com/mruby-pong.git

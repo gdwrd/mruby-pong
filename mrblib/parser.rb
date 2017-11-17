@@ -1,14 +1,15 @@
 ##
+# Class: parser object
+#
 # This Parser can parse HTTP Requests and Responsed
 # All Parsed data will be returned as Hash
 #
 class Parser
-
   SEP = "\r\n"
   C_TYPES = %w(application/json application/x-www-form-urlencoded multipart/form-data)
 
   DEFAULTS = {
-    "status" => 200,
+    "http_v" => 'HTTP/1.1'
   }
 
   ##
@@ -52,7 +53,7 @@ class Parser
     headers = parse_headers(raw_headers)
     params  = parse_params(raw_body, headers['Content-Type'])
 
-    { 
+    return { 
       headers:      headers,
       params:       params,
       url:          url,
@@ -71,7 +72,16 @@ class Parser
   # - raw_response {String} RAW HTTP Response
   # 
   def response(response)
+    raw_response = DEFAULTS["http_v"] + " "
+    raw_response << "#{response[:status]}\r\n"
 
+    response[:headers].each do |k, v|
+      raw_response << "#{k}: #{v}\r\n"
+    end
+
+    raw_response << "\r\n"
+    raw_response << response[:body]
+    raw_response
   end
 
 private
@@ -86,6 +96,8 @@ private
   # - headers {Hash} Hash of parsed HTTP headers
   #
   def parse_headers(raw_headers)
+    headers = {}
+
     raw_headers.each do |l|
       
       if l.include?(": ")
@@ -118,9 +130,9 @@ private
   #
   def parse_params(raw_body, c_type)
     params = {}
-
+    
     if C_TYPES[0] == c_type
-      return raw_body.to_json
+      return JSON.parse(raw_body)
     elsif C_TYPES[1] == c_type
       if raw_body.include?('&')
         raw_body = raw_body.split('&')

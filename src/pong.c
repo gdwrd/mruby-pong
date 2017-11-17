@@ -1,9 +1,9 @@
 /*
-**  pong.c - gem class
-** 
-**  Copyright (c) Nazarii Sheremet 2017
+** pong.c - gem class
 **
-**  See Copyright Notice in LICENSE
+** Copyright (c) Nazarii Sheremet 2017
+**
+** See Copyright Notice in LICENSE
 */
 
 #include "mruby.h"
@@ -21,11 +21,13 @@ static const struct mrb_data_type mrb_gem_data_type = {
   "mrb_gem_data", mrb_free,
 };
 
-void mrb_mruby_pong_gem_init(mrb_state *mrb) {
+void mrb_mruby_pong_gem_init(mrb_state *mrb)
+{
   struct RClass *gem;
-  gem = mrb_define_class(mrb, "HTTP", mrb->object_class);
+  gem = mrb_define_class(mrb, "Pong", mrb->object_class);
   DONE;
 }
 
-void mruby_mruby_pong_gem_final(mrb_state *mrb) {
+void mrb_mruby_pong_gem_final(mrb_state *mrb)
+{
 }

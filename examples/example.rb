@@ -1,9 +1,19 @@
 pong = Pong.new
 
-pong.get '/hello' do |req|
-  if req.params[:foo] == "bar"
-    return { "text" => "foobar" }
-  else 
-    return status: 404
-  end
+pong.get('/') do
+  { headers: {}, body: 'Hello from PONG', status: 200 }
 end
+
+pong.post('/route1') do |request|
+  json Hash[params: request[:params]]
+end
+
+pong.get('/route2') do
+  html '<h1>Hello from PONG</h1>'
+end
+
+pong.get('/route3') do
+  redirect_to '/'
+end
+
+pong.run

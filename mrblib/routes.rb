@@ -1,5 +1,12 @@
+##
+# Class: routes object
+#
+# This class is the main router for every action/request
+#
 class Routes
   ##
+  # Constructor:
+  #
   # Initialize new Routes struct
   #
   # Params:
@@ -10,12 +17,13 @@ class Routes
   #
   def initialize
     @table = {
-      "GET"    => {},
-      "POST"   => {},
-      "PUT"    => {},
-      "PATCH"  => {},
-      "DELETE" => {},
-      "OPTION" => {}
+      "GET"     => {},
+      "POST"    => {},
+      "PUT"     => {},
+      "PATCH"   => {},
+      "DELETE"  => {},
+      "OPTIONS" => {},
+      "HEAD"    => {}
     }
   end
 
@@ -30,7 +38,8 @@ class Routes
   # - block {Proc} returned block
   #
   def block(method, url)
-    @table[method][url]
+    block = @table[method][url]
+    block.nil? ? not_found : block
   end
 
   ##
@@ -46,5 +55,20 @@ class Routes
   #
   def push(method, url, block)
     @table[method][url] = block
+  end
+
+private
+
+  ##
+  # Default error page if Routes or Page not found
+  #
+  # Params:
+  # - None
+  #
+  # Response:
+  # - block {Proc} block with default response error and params
+  #
+  def not_found
+    Proc.new { { headers: {}, body: 'Page Not Found', status: 404 } }
   end
 end

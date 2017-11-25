@@ -19,9 +19,8 @@ class Pong
   #
   def initialize(config = nil)
     @config = config || Config.new
-
-    @logger = Logger.new 
     @routes = Routes.new
+    @logger = Logger.new 
     @parser = Parser.new
   end
 
@@ -150,106 +149,59 @@ class Pong
   def run
     @logger.welcome_logo
     @logger.info("Pong::run started port=#{@config.port}")
-  
     socket = TCPServer.new(@config.host, @config.port)
 
+    pool = HandlerPool.new(@config.threads)
+
     loop do
-      connection = socket.accept
+      pool.schedule(accept_connection(socket)) do |conn|
+        next if conn.closed?
 
-      begin
-        request_raw = ''
+        begin
+          request_raw = ''
+
+          loop do
+            buffer = conn.recv(2048)
+            request_raw << buffer
+
+            break if buffer.size != 2048
+          end
+
+          return if request_raw.empty?
           
-        loop do
-          buffer = connection.recv(2048)
-          request_raw << buffer
+          request = @parser.request(request_raw)
+          action  = @routes.block(request[:method], request[:url])
+          c_type  = request[:headers]['Content-Type']
 
-          break if buffer.size != 2048
-        end
+          begin
+            data = action.call(request)
+          rescue => error
+            data = internal_server_error(c_type)
 
-        if !request_raw.empty?
-          response_raw = handle_request(request_raw)
-          connection.send(response_raw, 0)
+            @logger.error(error.message)
+          end
+          
+          data[:headers]['Content-Length'] = data[:body].size
+          data[:headers]['Connection'] = 'Closed'
+          data[:headers]['Date'] = Time.now.to_s
+          data[:status] ||= 200
+          
+          @logger.info("#{request[:method]} request to #{request[:url]} #{data[:status]}")
+          
+          response_raw = @parser.response(data)
+          conn.send(response_raw, 0)
+        rescue
+          @logger.critical("Connections reset by peer") if conn.closed?
+        ensure
+          conn.close
         end
-      rescue => error
-        raise error if @config.debug && connection.closed?
-      ensure
-        connection.close
       end
     end
+
+    pool.shutdown
   end
 
 private
-
-  ##
-  # Receive data from Connection
-  #
-  # Params:
-  # - conn {Connection}
-  #
-  # Response:
-  # - data {String} Readed data from Connection
-  #
-  def receive_data(conn)
-    data = ''
-
-    loop do
-      buffer = conn.recv(RECV_BUFFER)
-      data << buffer
-
-      return data if buffer.size != RECV_BUFFER
-    end
-  end
-
-  ##
-  # Parse and Handle RAW Request with Router Actions
-  #
-  # This method parse Request, and send handled request
-  # to router table blocks.
-  # Then method generates from action raw response string.
-  #
-  # Params:
-  # - request_raw {String} Request String
-  #
-  # Response:
-  # - response_raw {String} Returns response for current request
-  #
-  def handle_request(raw_data)
-    parser = Parser.new
-    request = parser.request(raw_data)
-    action  = @routes.block(request[:method], request[:url])
-    c_type = request[:headers]['Content-Type']
-
-    begin
-      data = action.call(request)
-    rescue => error
-      data = internal_server_error(c_type)
-
-      @logger.error(error.message)
-    end
-
-    response = complete_response(data)
-    @logger.info("#{request[:method]} request to '#{request[:url]}' #{response[:status]}")
-    parser.response(response)
-  end
-
-  ##
-  # Add to response additional required information
-  # here is adding defautls headers
-  #
-  # Params:
-  # - response {Hash}
-  #
-  # Response:
-  # - response {Hash}
-  #
-  def complete_response(response)
-    response[:headers]['Content-Length'] = response[:body].size
-    response[:headers]['Connection'] = 'Closed'
-    response[:headers]['Date'] = Time.now.to_s
-    response[:status] = 200 if response[:status].nil?
-    
-    response
-  end
 
   ##
   # Returns default server internal error
@@ -266,5 +218,21 @@ private
       body: '500 Internal Server Error',
       status: 500
     }
+  end
+
+  ##
+  # Acceptiong new connection from socket
+  # If something went wrong return nil
+  #
+  # Params:
+  # - socket {TCPSocket} connetion socket
+  #
+  # Response:
+  # - connection {TCPSocket} 
+  #
+  def accept_connection(socket)
+    socket.accept
+  rescue
+    nil
   end
 end

@@ -134,6 +134,6 @@ private
   # - None
   #
   def format_message(log_level, message)
-    "[#{Time.now}] #{log_level.to_s.upcase} #{message}"
+    "[#{Time.now}] #{log_level.to_s.upcase} -- #{message}"
   end
 end

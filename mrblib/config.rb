@@ -4,12 +4,13 @@
 # This class used for creating configuration for pong class
 #
 class Config
-  attr_accessor :port, :host, :ssl_enabled, :debug
+  attr_accessor :port, :host, :ssl_enabled, :debug, :threads
 
-  DEFAULT_HOST = '127.0.0.1'
-  DEFAULT_PORT = 4321
-  SSL_ENABLED  = false
-
+  DEFAULT_HOST    = '127.0.0.1'
+  DEFAULT_PORT    = 4321
+  SSL_ENABLED     = false
+  DEFAULT_THREADS = 10
+  
   ##
   # Constructor:
   #
@@ -26,8 +27,12 @@ class Config
     @port        = DEFAULT_PORT
     @ssl_enabled = SSL_ENABLED
     @debug       = false
+    @threads     = DEFAULT_THREADS
   end
 
+  ##
+  # Class methods for configuration
+  #
   class << self
     ##
     # Configure new Pong configurations

@@ -4,16 +4,17 @@
 # This class is the main router for every action/request
 #
 class Routes
+
   ##
   # Constructor:
   #
-  # Initialize new Routes struct
+  # Returns new rotues instance
   #
   # Params:
-  # - New
+  # - None
   #
   # Response:
-  # - Return Empty Routes table
+  # - routes {Routes}
   #
   def initialize
     @table = {

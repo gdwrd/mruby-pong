@@ -1,8 +1,7 @@
 ##
 # Class: parser object
 #
-# This Parser can parse HTTP Requests and Responsed
-# All Parsed data will be returned as Hash
+# This Parser can parse HTTP Requests and Responses
 #
 class Parser
   SEP = "\r\n"
@@ -64,9 +63,10 @@ class Parser
 
   ##
   # This method will create a raw HTTP Response from sended params
+  # Example Response: "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Hello from PONG</h1>"
   #
   # Params:
-  # - response {Hash} Returned from action Hash
+  # - response {Hash} Hash with status code, body and headers
   #
   # Response:
   # - raw_response {String} RAW HTTP Response
@@ -87,7 +87,7 @@ class Parser
 private
 
   ##
-  # Parse Headers and returned Hash with Headers
+  # Parse Array of Strings with Headers and returned parsed Hash
   # 
   # Params: 
   # - raw_headers {Array} Array of unparsed HTTP headers
@@ -122,8 +122,8 @@ private
   # Parse Request body depending on Content-Type header
   #
   # Params:
-  # - raw_body {String} raw HTTP Request Body
-  # - c_type   {String} body Content-Type
+  # - raw_body {String} Raw HTTP Request Body string
+  # - c_type   {String} Value of Content-Type request header
   #
   # Response:
   # - params {Hash} parsed Hash with sended params

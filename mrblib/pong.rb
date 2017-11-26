@@ -1,24 +1,29 @@
 ##
 # Class: pong object
 #
-# Allows you create action blocks for every request
+# Main library class
+# Allows you to create your own simple web application
+# 
+# Example usage in `examles/example.rb` file
 #
 class Pong
-  attr_reader :config, :router, :parser
+  attr_reader :config, :routes, :parser
 
   RECV_BUFFER = 2048
 
   ##
   # Constructor:
   #
-  # Initialize Pong Router
+  # Initialize Pong instance
   #
-  # Params: None
+  # Params:
+  # - config {Config} Pong Configuration class, default: Config.new (returns default configuration)
   #
-  # Response: Pong class instance
+  # Response:
+  # - pong {Pong} Default application instance
   #
-  def initialize(config = nil)
-    @config = config || Config.new
+  def initialize(config = Config.new)
+    @config = config.kind_of?(Hash) ? Config.from_hash(config) : config
     @routes = Routes.new
     @logger = Logger.new 
     @parser = Parser.new

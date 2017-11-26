@@ -2,5 +2,5 @@ MRuby::Build.new do |conf|
   toolchain :gcc
   conf.gembox 'default'
   conf.gem '../mruby-pong'
-  conf.enable_test
+  conf.gem :github => 'matsumotory/mruby-simpletest'
 end

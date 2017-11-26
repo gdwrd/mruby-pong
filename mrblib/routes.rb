@@ -1,7 +1,7 @@
 ##
 # Class: routes object
 #
-# This class is the main router for every action/request
+# This class is the main router for every action/request in Pong
 #
 class Routes
 

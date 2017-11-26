@@ -1,23 +1,23 @@
 ##
 # Class: logger class
 #
-# Allows logging each info
+# Allows you to logging each information
 #
 class Logger
+
   ##
   # Constructor
   # 
   # Provides logging with timestamps and different logging levels
+  # With saving all messages to log files
   #
   # Params:
-  # - None
+  # - file_path {String} Path to file, where you want to store your app logs, default: 'pong.log'
   #
   # Response:
   # - logger {Logger}
   #
-  def initialize(file_path = nil)
-    file_path ||= 'pong.log'
-
+  def initialize(file_path = 'pong.log')
     @file = File.open(file_path, 'a')
   end
 
@@ -87,7 +87,13 @@ class Logger
   end
 
   ##
-  # Returns Welcome logo
+  # Prints Welcome Pong logo
+  #
+  # Params:
+  # - None
+  #
+  # Response:
+  # - None
   #
   def welcome_logo
     puts "

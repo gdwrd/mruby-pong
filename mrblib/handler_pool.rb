@@ -13,7 +13,7 @@ class HandlerPool
   # Initialize HandlerPool instance
   #
   # Params:
-  # - size {Int} size of thread pool workers
+  # - size {Int} size of thread pool workers, defautl: 10
   #
   # Response:
   # - pool {HandlerPool}
@@ -42,7 +42,7 @@ class HandlerPool
   #
   # Params: 
   # - args  {Array} Array of arguments for worker
-  # - block {Proc}  Worker Proc
+  # - block {Proc}  Worker block
   #
   # Response:
   # - None
@@ -52,8 +52,8 @@ class HandlerPool
   end
 
   ##
-  # Shutdown method for HandlerPool instance
-  # join all threads
+  # Shutdown method for HandlerPool instance.
+  # Method call join for all threads
   #
   # Params:
   # - None

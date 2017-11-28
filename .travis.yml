@@ -13,5 +13,5 @@ before_script:
   - cp -fp ../mruby-pong/.travis_build_config.rb build_config.rb
 script:
   - make
-  - ./bin/mruby ../mruby-pong/test/pong.rb
+  # - ./bin/mruby ../mruby-pong/test/pong.rb
   - make test

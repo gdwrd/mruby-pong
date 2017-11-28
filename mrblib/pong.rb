@@ -143,7 +143,15 @@ class Pong
   end
 
   ##
-  # Server starts Listening for the requests
+  # Server starts Listening for the requests,
+  # Parse them and runs users code saved in routes
+  # table variables as Proc blocks of code.
+  # This blocks should return hash, or use custom Kernel 
+  # methods for return correct hash for future parsing
+  # and returning to the requested client.
+  #
+  # This is the last method, that should called 
+  # in the end of the application.
   #
   # Params:
   # - None
